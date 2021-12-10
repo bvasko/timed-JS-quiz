@@ -3,8 +3,9 @@
 ## About
 
 ## Usage
-
 Take the quiz here: 
+
+## Contributing
 
 ## License
 

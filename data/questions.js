@@ -1,5 +1,6 @@
-{
-  "questions": [
+const data = function() {
+  return {
+    "questions": [
     {
       "question":"Commonly used data types do not include",
       "answers": ["strings", "booleans", "alerts", "numbers"],
@@ -25,5 +26,5 @@
       "answers": ["Javascript","terminal / bash", "for loops", "console.log"],
       "correctAnswer": "console.log"
     }
-  ]
-}
+  ]};
+};
