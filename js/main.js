@@ -50,6 +50,9 @@ const Quiz = function Quiz() {
       renderQuestion: function(q) {
         /* Display question & answers */
         console.log('render next question', q);
+        if (this.questionIndex === this.quizData.questions.length -1) {
+          return;
+        }
         // TODO: clean up these conditionals
         let olEl = (document.getElementById("answerList")) ? 
           document.getElementById("answerList") : 
@@ -76,19 +79,21 @@ const Quiz = function Quiz() {
       },
       showAnswerMessage: function(evt) {
         /* 
-        * TODO: sending event instead, figure out why this isn't working 
-        * **/
-        // const next = new CustomEvent(events.NEXT_QUESTION, {
-        //   detail: {
-        //     question: this.quizData.questions[this.questionIndex++]
-        //   }
-        // });
-        const t = setTimeout(() => {
-          this.renderQuestion(this.quizData.questions[this.questionIndex++]); 
-        }, 3000);
+        * TODO: figure out why this CustomEvent doesn't dispatch in setTimeout
+          const next = new CustomEvent(events.NEXT_QUESTION, {detail: {}});
+        **/
         let msgEl = document.getElementById("msg");
         let className = (evt.detail.correctAnswer) ? "correct" : "wrong";
         msgEl.innerHTML = `<p class="${className}">${evt.detail.message}</p>`;
+        if (evt.detail.correctAnswer) {
+          this.questionIndex++;
+          const t = setTimeout(() => {
+            if (this.questionIndex === this.quizData.questions.length-1){
+              this.finishQuiz();
+            }
+            this.renderQuestion(this.quizData.questions[this.questionIndex]); 
+          }, 1000);
+        }
       },
       startTimer: function() {
         const timerInterval = setInterval(function(){ 
@@ -120,15 +125,22 @@ const Quiz = function Quiz() {
         // attach the custom event listeners
         document.addEventListener(events.DISPLAY_RESPONSE, this.showAnswerMessage.bind(this));
         timerEl.addEventListener(events.REDUCE_TIME, this.timePenalty.bind(this));
-        quizEl.addEventListener(events.NEXT_QUESTION, function(){ console.log("got it")});
+        //TODO: make this work
+        //quizEl.addEventListener(events.NEXT_QUESTION, function(){ console.log("got it")});
         /* hide intro screen */
         const startScreen = document.getElementById("startScreen");
         startScreen.style.display = 'none';
         // show first question and start timer
-        this.renderQuestion();
+        this.renderQuestion(this.quizData.questions[0]);
         this.startTimer();
       },
       finishQuiz: function() {
+        let quiz = document.getElementById("quiz");
+        document.getElementById("question").innerHTML = "";
+        document.getElementById("answers").innerHTML = "";
+        quiz.style.display = "none";
+        const finalEl = document.getElementById("finalScreen");
+        finalEl.innerHTML = `Final Score: ${this.score}`;
         /* 
         * - show final score
         * - show input for initials

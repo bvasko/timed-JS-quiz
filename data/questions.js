@@ -9,7 +9,7 @@ const data = function() {
     {
       "question":"The condition in an if / else statement is enclosed within",
       "answers": ["commas", "curly brackets", "quotes", "parantheses"],
-      "correctAnswer": "curly brackets"
+      "correctAnswer": "parantheses"
     },
     {
       "question":"Arrays in Javascript can be used to store",
