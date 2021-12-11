@@ -2,8 +2,15 @@
  * Setup App Structure
  * 
  */
-
-
+const ScoreBoard = function ScoreBoard() {
+    /*
+    * ScoreBoard
+    * - render list of scores and initials
+    * - sort scores array from highest to lowest
+    * - display "clear high scores" button
+    * - display "go back" button to return to Quiz home page
+    */
+}
 const Quiz = function Quiz() {
   return {
       qData: data(),
@@ -13,6 +20,11 @@ const Quiz = function Quiz() {
       score: null,
       timerSeconds: 180,
       checkAnswer: function(q, answer) {
+        /*
+         * - updates score
+        * - updates timer if the answer is wrong
+        * - displays message to the user if the answer is correct or wrong
+        * - advances to the next question */
         if (answer === q.correctAnswer) {
           //show correct message
           this.score = this.score + 10;
@@ -22,15 +34,16 @@ const Quiz = function Quiz() {
           this.timerSeconds = this.timerSeconds - 10;
         }
         this.questionIndex++;
-        this.showNext();
+        this.renderQuestion();
       },
       renderQuestion: (q) => {
+        /*
+          * renderQuestion()
+          * - display question, answers and answer button
+        */
         console.log('display Question');
       },
       showAnswerMessage: () => {
-
-      },
-      showNext: () => {
 
       },
       startTimer: function() {
@@ -54,6 +67,17 @@ const Quiz = function Quiz() {
         renderQuestion();
         score = 0;
         _startTimer();
+        /* hide intro screen */
+      },
+      finishQuiz: function() {
+        /* 
+        * - show final score
+        * - show input for initials
+        * - show submit button
+        * - validate input text
+        * - store object or array in localStorage of user initials & score
+        * - sort scores array from highest to lowest
+        */
       }
   }
 };
@@ -65,33 +89,7 @@ const Quiz = function Quiz() {
 function initApp() {
   const newTest = Quiz();
   const startBtn = document.getElementById("startQuiz");
-  startBtn.addEventListener("click");
-  newTest.startQuiz();
+  startBtn.addEventListener("click", function(evt){
+    newTest.startQuiz();
+  });
 }
-
-/*
- * renderQuestion()
- * - display question, answers and answer button
- * 
- * answer button click --
- *  then checkAnswer()
- * - updates score
- * - updates timer if the answer is wrong
- * - displays message to the user if the answer is correct or wrong
- * - advances to the next question
- * 
- * finishQuiz()
- * - show final score
- * - show input for initials
- * - show submit button
- * - validate input text
- * - store object or array in localStorage of user initials & score
- * - sort scores array from highest to lowest
- * 
- * ScoreBoard
- * - render list of scores and initials
- * - sort scores array from highest to lowest
- * - display "clear high scores" button
- * - display "go back" button to return to Quiz home page
- * 
- */
