@@ -2,34 +2,74 @@
  * Setup App Structure
  * 
  */
-const Quiz = function app() {
+
+
+const Quiz = function Quiz() {
   return {
-      timer: false,
-      getQuestions: function getQuestions(){
-        console.log('data', data());
-        return data();
+      qData: data(),
+      msgCorrect: "",
+      msgIncorrect: "",
+      questionIndex: null,
+      score: null,
+      timerSeconds: 180,
+      checkAnswer: function(q, answer) {
+        if (answer === q.correctAnswer) {
+          //show correct message
+          this.score = this.score + 10;
+          showAnswerMessage(this.msgCorrect);
+        } else {
+          showAnswerMessage(this.msgIncorrect);
+          this.timerSeconds = this.timerSeconds - 10;
+        }
+        this.questionIndex++;
+        this.showNext();
+      },
+      renderQuestion: (q) => {
+        console.log('display Question');
+      },
+      showAnswerMessage: () => {
+
+      },
+      showNext: () => {
+
+      },
+      startTimer: function() {
+        const timerInterval = setInterval(function(){ 
+          this.timerSeconds--;
+          if (this.timerSeconds === 0) {
+            clearInterval(timerInterval);
+          }
+        }, 1000);
+      },
+      startQuiz: function() {
+        /*
+        * startQuiz()
+        * - initializes countdown timer
+        * - nice to have: shows progress bar
+        * - initializes score
+        * - initializes question counter to store which question user is on
+        * - loads first question & answers
+        * - starts countdown timer
+        */
+        renderQuestion();
+        score = 0;
+        _startTimer();
       }
   }
 };
 
-const newTest = Quiz();
-newTest.getQuestions();
-
 /**
- * Pseudocode
- * 
- * Start App initializes the first screen where user presses 'start quiz'
- * 
- * attach listener to 'start quiz' -- run startQuiz function
- * 
- * startQuiz()
- * - initializes countdown timer
- * - shows progress bar
- * - initializes _score
- * - initializes question counter to store which question user is on
- * - loads first question & answers
- * - starts countdown timer
- * 
+ * Loading the quiz initializes the first screen where user presses 'start quiz'
+ * attach listener to 'start quiz' btn and run startQuiz function
+ */
+function initApp() {
+  const newTest = Quiz();
+  const startBtn = document.getElementById("startQuiz");
+  startBtn.addEventListener("click");
+  newTest.startQuiz();
+}
+
+/*
  * renderQuestion()
  * - display question, answers and answer button
  * 
