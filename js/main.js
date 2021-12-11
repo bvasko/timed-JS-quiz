@@ -2,6 +2,15 @@
  * Setup App Structure
  * 
  */
+/***
+ * Custom Event Dictionary
+ */
+ const events = {
+  DISPLAY_RESPONSE: "displayResponse",
+  TIME_PENALTY: "timePenalty",
+  NEXT_QUESTION: "nextQuestion"
+}
+
 const ScoreBoard = function ScoreBoard() {
     /*
     * ScoreBoard
@@ -20,49 +29,43 @@ const Quiz = function Quiz() {
       score: null,
       timerSeconds: null,
       handleAnswerClick: function(question, evt) {
-        /* Create custom event for answer click */
-        const li = evt.target;
-        const clickAnswer = new Event("clickAnswer", {
-          "bubbles":false, 
-          "cancelable":false,
-          answer: li.textContent, 
-          question: question});
-        li.dispatchEvent(clickAnswer);
- 
+        /* Dispatch custom event on answer click */
         const answer = evt.target.textContent;
-
-        /*
-        * Try to decouple these things by adding listeners for the custom event
-          * - updates score
-          * - updates timer if the answer is wrong
-          * - displays message to the user if the answer is correct or wrong
-          * - advances to the next question 
-        * **/
-
-        if (answer === question.correctAnswer) {
-          //increment score & show correct message
-          this.score = this.score + 10;
-          this.showAnswerMessage(this.msgCorrect, true);
-        } else {
-          // decrement timer & show incorrect message
-          this.timerSeconds = this.timerSeconds - 10;
-          this.showAnswerMessage(this.msgIncorrect, false);
-        }
-        // next question
-        this.questionIndex++; 
-        /* use setTimer to wait before displaying next question */
-        //this.renderQuestion();
+        const correctAnswer = (answer === question.correctAnswer);
+        //create event to update response message
+        const message = new CustomEvent(events.DISPLAY_RESPONSE, {
+          detail: {
+            correctAnswer: (correctAnswer),
+            message: (correctAnswer) ? this.msgCorrect : this.msgIncorrect
+          }
+        });
+        // send event
+        document.dispatchEvent(message);
+        if (correctAnswer) {
+          // send event to deduct time penalty
+          const penalty = new Event(events.TIME_PENALTY);
+          document.dispatchEvent(penalty);
+        } 
       },
       renderQuestion: function(q) {
-        /*
-          * Display question & answers
-        */
+        /* Display question & answers */
+        console.log('render next question', q);
+        // TODO: clean up these conditionals
+        let olEl = (document.getElementById("answerList")) ? 
+          document.getElementById("answerList") : 
+          document.createElement("ol");
+        if (this.questionIndex === 0) {
+          olEl.id = "answerList";
+        }
+        if (this.questionIndex !== 0) {
+          document.getElementById("answerList").innerHTML = "";
+          document.getElementById("msg").innerHTML = "";
+        }
         const _question = this.quizData.questions[this.questionIndex];
         let questionEl = document.getElementById("question");
         let answersEl = document.getElementById("answers");
-        let olEl = document.createElement("ol");
-        olEl.id = "answerList";
-        questionEl.innerHTML = `<p>${_question.question}</p>`;
+
+        questionEl.innerHTML = `<p>${this.questionIndex+1} ${_question.question}</p>`;
         _question.answers.forEach((answer) => {
           let liEl = document.createElement("li");
           liEl.textContent += answer;
@@ -71,10 +74,21 @@ const Quiz = function Quiz() {
         olEl.addEventListener("click", this.handleAnswerClick.bind(this, _question));
         answersEl.append(olEl);
       },
-      showAnswerMessage: function(msg, isCorrect) {
+      showAnswerMessage: function(evt) {
+        /* 
+        * TODO: sending event instead, figure out why this isn't working 
+        * **/
+        // const next = new CustomEvent(events.NEXT_QUESTION, {
+        //   detail: {
+        //     question: this.quizData.questions[this.questionIndex++]
+        //   }
+        // });
+        const t = setTimeout(() => {
+          this.renderQuestion(this.quizData.questions[this.questionIndex++]); 
+        }, 3000);
         let msgEl = document.getElementById("msg");
-        let className = (isCorrect) ? "correct" : "wrong";
-        msgEl.innerHTML = `<p class="${className}">${msg}</p>`;
+        let className = (evt.detail.correctAnswer) ? "correct" : "wrong";
+        msgEl.innerHTML = `<p class="${className}">${evt.detail.message}</p>`;
       },
       startTimer: function() {
         const timerInterval = setInterval(function(){ 
@@ -84,6 +98,9 @@ const Quiz = function Quiz() {
           }
         }, 1000);
       },
+      timePenalty: function() {
+        this.timerSeconds = this.timerSeconds - 10;
+      },
       startQuiz: function() {
         /*
         * - initializes countdown timer
@@ -91,13 +108,23 @@ const Quiz = function Quiz() {
         * - initializes question index to store which question user is on
         * - displays first question & answers
         * - starts countdown timer
+        * - attach listeners
         */
         this.score = 0;
         this.questionIndex = 0;
         this.timerSeconds = 180;
+        // get dom elements to attach listeners
+        const msgEl = document.getElementById("msg");
+        const timerEl = document.getElementById("quizTimer");
+        const quizEl = document.getElementById("quiz");
+        // attach the custom event listeners
+        document.addEventListener(events.DISPLAY_RESPONSE, this.showAnswerMessage.bind(this));
+        timerEl.addEventListener(events.REDUCE_TIME, this.timePenalty.bind(this));
+        quizEl.addEventListener(events.NEXT_QUESTION, function(){ console.log("got it")});
         /* hide intro screen */
         const startScreen = document.getElementById("startScreen");
         startScreen.style.display = 'none';
+        // show first question and start timer
         this.renderQuestion();
         this.startTimer();
       },
@@ -121,9 +148,6 @@ const Quiz = function Quiz() {
 function initApp() {
   const newTest = Quiz();
   const startBtn = document.getElementById("startQuiz");
-  document.addEventListener("clickAnswer", function(evt){
-    console.log('my custom event', evt)
-  });
   startBtn.addEventListener("click", function(evt){
     console.log('start', newTest)
     newTest.startQuiz();
