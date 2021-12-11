@@ -33,8 +33,8 @@ newTest.getQuestions();
  * renderQuestion()
  * - display question, answers and answer button
  * 
- * answerQuestion()
- * - runs on answer click
+ * answer button click --
+ *  then checkAnswer()
  * - updates score
  * - updates timer if the answer is wrong
  * - displays message to the user if the answer is correct or wrong
@@ -45,5 +45,13 @@ newTest.getQuestions();
  * - show input for initials
  * - show submit button
  * - validate input text
+ * - store object or array in localStorage of user initials & score
+ * - sort scores array from highest to lowest
+ * 
+ * ScoreBoard
+ * - render list of scores and initials
+ * - sort scores array from highest to lowest
+ * - display "clear high scores" button
+ * - display "go back" button to return to Quiz home page
  * 
  */
