@@ -13,38 +13,68 @@ const ScoreBoard = function ScoreBoard() {
 }
 const Quiz = function Quiz() {
   return {
-      qData: data(),
-      msgCorrect: "",
-      msgIncorrect: "",
+      quizData: data(), //load data from global namespace - ugh
+      msgCorrect: "Good job!",
+      msgIncorrect: "Nope",
       questionIndex: null,
       score: null,
-      timerSeconds: 180,
-      checkAnswer: function(q, answer) {
-        /*
-         * - updates score
-        * - updates timer if the answer is wrong
-        * - displays message to the user if the answer is correct or wrong
-        * - advances to the next question */
-        if (answer === q.correctAnswer) {
-          //show correct message
-          this.score = this.score + 10;
-          showAnswerMessage(this.msgCorrect);
-        } else {
-          showAnswerMessage(this.msgIncorrect);
-          this.timerSeconds = this.timerSeconds - 10;
-        }
-        this.questionIndex++;
-        this.renderQuestion();
-      },
-      renderQuestion: (q) => {
-        /*
-          * renderQuestion()
-          * - display question, answers and answer button
-        */
-        console.log('display Question');
-      },
-      showAnswerMessage: () => {
+      timerSeconds: null,
+      handleAnswerClick: function(question, evt) {
+        /* Create custom event for answer click */
+        const li = evt.target;
+        const clickAnswer = new Event("clickAnswer", {
+          "bubbles":false, 
+          "cancelable":false,
+          answer: li.textContent, 
+          question: question});
+        li.dispatchEvent(clickAnswer);
+ 
+        const answer = evt.target.textContent;
 
+        /*
+        * Try to decouple these things by adding listeners for the custom event
+          * - updates score
+          * - updates timer if the answer is wrong
+          * - displays message to the user if the answer is correct or wrong
+          * - advances to the next question 
+        * **/
+
+        if (answer === question.correctAnswer) {
+          //increment score & show correct message
+          this.score = this.score + 10;
+          this.showAnswerMessage(this.msgCorrect, true);
+        } else {
+          // decrement timer & show incorrect message
+          this.timerSeconds = this.timerSeconds - 10;
+          this.showAnswerMessage(this.msgIncorrect, false);
+        }
+        // next question
+        this.questionIndex++; 
+        /* use setTimer to wait before displaying next question */
+        //this.renderQuestion();
+      },
+      renderQuestion: function(q) {
+        /*
+          * Display question & answers
+        */
+        const _question = this.quizData.questions[this.questionIndex];
+        let questionEl = document.getElementById("question");
+        let answersEl = document.getElementById("answers");
+        let olEl = document.createElement("ol");
+        olEl.id = "answerList";
+        questionEl.innerHTML = `<p>${_question.question}</p>`;
+        _question.answers.forEach((answer) => {
+          let liEl = document.createElement("li");
+          liEl.textContent += answer;
+          olEl.append(liEl);
+        });
+        olEl.addEventListener("click", this.handleAnswerClick.bind(this, _question));
+        answersEl.append(olEl);
+      },
+      showAnswerMessage: function(msg, isCorrect) {
+        let msgEl = document.getElementById("msg");
+        let className = (isCorrect) ? "correct" : "wrong";
+        msgEl.innerHTML = `<p class="${className}">${msg}</p>`;
       },
       startTimer: function() {
         const timerInterval = setInterval(function(){ 
@@ -56,18 +86,20 @@ const Quiz = function Quiz() {
       },
       startQuiz: function() {
         /*
-        * startQuiz()
         * - initializes countdown timer
-        * - nice to have: shows progress bar
         * - initializes score
-        * - initializes question counter to store which question user is on
-        * - loads first question & answers
+        * - initializes question index to store which question user is on
+        * - displays first question & answers
         * - starts countdown timer
         */
-        renderQuestion();
-        score = 0;
-        _startTimer();
+        this.score = 0;
+        this.questionIndex = 0;
+        this.timerSeconds = 180;
         /* hide intro screen */
+        const startScreen = document.getElementById("startScreen");
+        startScreen.style.display = 'none';
+        this.renderQuestion();
+        this.startTimer();
       },
       finishQuiz: function() {
         /* 
@@ -89,7 +121,13 @@ const Quiz = function Quiz() {
 function initApp() {
   const newTest = Quiz();
   const startBtn = document.getElementById("startQuiz");
+  document.addEventListener("clickAnswer", function(evt){
+    console.log('my custom event', evt)
+  });
   startBtn.addEventListener("click", function(evt){
+    console.log('start', newTest)
     newTest.startQuiz();
   });
 }
+
+initApp();

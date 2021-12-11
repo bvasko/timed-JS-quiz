@@ -3,7 +3,7 @@
 ## About
 
 ## Usage
-Take the quiz here: ttps://bvasko.github.io/timed-JS-quiz/
+Take the quiz here: https://bvasko.github.io/timed-JS-quiz/
 
 ## Contributing
 
