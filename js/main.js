@@ -49,7 +49,6 @@ const Quiz = function Quiz() {
       },
       renderQuestion: function(q) {
         /* Display question & answers */
-        console.log('render next question', q);
         if (this.questionIndex === this.quizData.questions.length -1) {
           return;
         }
@@ -68,10 +67,16 @@ const Quiz = function Quiz() {
         let questionEl = document.getElementById("question");
         let answersEl = document.getElementById("answers");
 
-        questionEl.innerHTML = `<p>${this.questionIndex+1} ${_question.question}</p>`;
+        questionEl.innerHTML = `<p class="question">
+          <span class="question-number">
+            ${this.questionIndex+1}
+          </span> 
+          ${_question.question}:
+          </p>`;
         _question.answers.forEach((answer) => {
           let liEl = document.createElement("li");
           liEl.textContent += answer;
+          liEl.className = "answer";
           olEl.append(liEl);
         });
         olEl.addEventListener("click", this.handleAnswerClick.bind(this, _question));
