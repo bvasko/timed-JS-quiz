@@ -22,6 +22,7 @@ const ScoreBoard = function ScoreBoard() {
 }
 const Quiz = function Quiz() {
   return {
+      attempts: 0,
       quizData: data(), //load data from global namespace - ugh
       msgCorrect: "Good job!",
       msgIncorrect: "Nope",
@@ -36,6 +37,9 @@ const Quiz = function Quiz() {
         const question = this.quizData.questions[this.questionIndex];
         const answer = evt.target.textContent;
         const correctAnswer = (answer === question.correctAnswer);
+        if (this.attempts === 0 && correctAnswer) {
+          this.score = this.score + 20;
+        }
         //create event to update response message
         const message = new CustomEvent(events.DISPLAY_RESPONSE, {
           detail: {
@@ -46,21 +50,21 @@ const Quiz = function Quiz() {
         // dispatch time penalty event if the answer is wrong
         document.dispatchEvent(message);
         if (!correctAnswer) {
+          // track answer attempts so the score only increments when you get it right on the first try
+          this.attempts++;
           // send event to deduct time penalty
           const penalty = new Event(events.TIME_PENALTY);
           document.dispatchEvent(penalty);
         } 
       },
-      renderQuestion: function(q) {
+      renderQuestion: function() {
         /* Display question & answers */
-        if (this.questionIndex === this.quizData.questions.length -1) {
-          return;
-        }
-        // TODO: clean up these conditionals
-        let olEl = (document.getElementById("answerList")) ? 
-          document.getElementById("answerList") : 
-          document.createElement("ol");
-        if (this.questionIndex === 0) {
+        this.attempts = 0;
+        let olEl = null;
+        if (document.getElementById("answerList")) {
+          olEl = document.getElementById("answerList")
+        } else {
+          olEl = document.createElement("ol");
           olEl.id = "answerList";
         }
         if (this.questionIndex !== 0) {
@@ -96,10 +100,11 @@ const Quiz = function Quiz() {
         if (evt.detail.correctAnswer) {
           this.questionIndex++;
           const t = setTimeout(() => {
-            if (this.questionIndex === this.quizData.questions.length-1){
+            if (this.questionIndex === this.quizData.questions.length){
               this.finishQuiz();
+              return;
             }
-            this.renderQuestion(this.quizData.questions[this.questionIndex]); 
+            this.renderQuestion(); 
           }, 1000);
         }
       },
@@ -116,6 +121,19 @@ const Quiz = function Quiz() {
           timeStr = `${minutes}:${(seconds === 0 ? "00" : seconds)}`;
         }
         return timeStr;
+      },
+      saveScore: function(evt) {
+        let lsScores = JSON.parse(localStorage.getItem('scores')) || {scores: []};
+        console.log('score', lsScores)
+        const inputVal = document.getElementById("name");
+        const d = new Date();
+        const scoreObj = {
+          initials: inputVal.value,
+          score: this.score,
+          ts: d.toDateString()
+        };
+        lsScores.scores.push(scoreObj);
+        localStorage.setItem('scores', JSON.stringify(lsScores));
       },
       startTimer: function(stopTimer) {
         /**
@@ -142,6 +160,7 @@ const Quiz = function Quiz() {
         this.timerSeconds = this.timerSeconds - 10;
         const timerEl = document.getElementById("quizTimer");
         timerEl.setAttribute("class","error");
+        /* Remove error class after 800ms */
         const t = setTimeout(() => {
           timerEl.setAttribute("class", "");
         }, 800)
@@ -155,16 +174,17 @@ const Quiz = function Quiz() {
         * - starts countdown timer
         * - attach listeners
         */
-       
         this.score = 0;
         this.questionIndex = 0;
         this.timerSeconds = 180;
         const timerEl = document.getElementById("quizTimer");
         const quizEl = document.getElementById("quiz");
+  
         // attach the custom event listeners
         document.addEventListener(events.DISPLAY_RESPONSE, this.showAnswerMessage.bind(this));
         document.addEventListener(events.TIME_PENALTY, this.timePenalty.bind(this));
         quizEl.addEventListener("click", this.handleAnswerClick.bind(this));
+
         //TODO: make this work - need to change 'quizEl' to document
         //quizEl.addEventListener(events.NEXT_QUESTION, function(){ console.log("got it")});
         /* hide intro screen */
@@ -173,17 +193,21 @@ const Quiz = function Quiz() {
         timerEl.style.display = 'block';
         // show first question and start timer
         this.startTimer();
-        this.renderQuestion(this.quizData.questions[0]);
+        this.renderQuestion();
       },
       finishQuiz: function() {
+        let finalScreen = document.getElementById("finalScreen");
+        finalScreen.style.display = "block";
         let quiz = document.getElementById("quiz");
         document.getElementById("question").innerHTML = "";
         document.getElementById("answers").innerHTML = "";
         quiz.style.display = "none";
-        const finalEl = document.getElementById("finalScreen");
-        finalEl.innerHTML = `Final Score: ${this.score}`;
+        const finalScore = document.getElementById("finalScore");
+        finalScore.innerHTML = `Your final score is ${this.score}`;
         this.timerSeconds = 0;
         this.startTimer(true); //pass stopTimer arg bool to stopTimer
+        const saveBtn = document.getElementById("submitBtn");
+        saveBtn.addEventListener("click", this.saveScore.bind(this));
         /* 
         * - show final score
         * - show input for initials
