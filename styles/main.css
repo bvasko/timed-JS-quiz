@@ -2,6 +2,7 @@
   --padding: 8px;
   --margin: 12px 0px;
   --blue: rgb(45, 89, 231);
+  --dark-blue: rgb(30, 42, 109);
 }
 
 body {
@@ -11,20 +12,24 @@ body {
 header, main {
   margin: 1rem 15rem;
 }
+header {
+  display: flex;
+  justify-content: space-between;
+}
 p {
   padding: var(--padding);
   margin: var(--margin);
 }
 
 .cta {
-  border: none;
+  background-color: #eee;
+  border: 1px solid #999;
   border-radius: 5px;
   padding: var(--padding);
-
 }
 
 .cta:hover {
-  border: none;
+  border: 1px solid rgb(30, 42, 109);
   border-radius: 5px;
   color: #FFF;
   background-color: var(--blue);
@@ -39,7 +44,7 @@ p {
   display: inline-block;
   background-color: var(--blue);
   color: #FFF;
-  padding: var(--padding);
+  padding: 0px 8px;
   width: fit-content;
   border-radius: 90px;
 }
@@ -66,4 +71,17 @@ li.answer:hover {
 #msg .correct {
   color: rgb(9, 136, 51);
   font-weight: bold;
+}
+
+#quizTimer {
+  display: none;
+  font-size: 1.4rem;
+  color: #FFF;
+  background-color: var(--dark-blue);
+  padding: 4px 12px;
+  border-radius: 8px;
+}
+
+#quizTimer.error {
+  background-color:rgb(179, 8, 8);
 }
