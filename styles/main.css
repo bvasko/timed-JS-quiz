@@ -88,3 +88,6 @@ li.answer:hover {
 #finalScreen {
   display: none;
 }
+#scoreboard {
+  display: none;
+}
