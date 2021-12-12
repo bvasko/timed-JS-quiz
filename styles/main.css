@@ -85,3 +85,6 @@ li.answer:hover {
 #quizTimer.error {
   background-color:rgb(179, 8, 8);
 }
+#finalScreen {
+  display: none;
+}

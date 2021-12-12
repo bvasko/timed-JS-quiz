@@ -57,17 +57,14 @@ const Quiz = function Quiz() {
           document.dispatchEvent(penalty);
         } 
       },
-      renderQuestion: function(q) {
+      renderQuestion: function() {
         /* Display question & answers */
         this.attempts = 0;
-        if (this.questionIndex === this.quizData.questions.length -1) {
-          return;
-        }
-        // TODO: clean up these conditionals
-        let olEl = (document.getElementById("answerList")) ? 
-          document.getElementById("answerList") : 
-          document.createElement("ol");
-        if (this.questionIndex === 0) {
+        let olEl = null;
+        if (document.getElementById("answerList")) {
+          olEl = document.getElementById("answerList")
+        } else {
+          olEl = document.createElement("ol");
           olEl.id = "answerList";
         }
         if (this.questionIndex !== 0) {
@@ -103,10 +100,11 @@ const Quiz = function Quiz() {
         if (evt.detail.correctAnswer) {
           this.questionIndex++;
           const t = setTimeout(() => {
-            if (this.questionIndex === this.quizData.questions.length-1){
+            if (this.questionIndex === this.quizData.questions.length){
               this.finishQuiz();
+              return;
             }
-            this.renderQuestion(this.quizData.questions[this.questionIndex]); 
+            this.renderQuestion(); 
           }, 1000);
         }
       },
@@ -129,7 +127,6 @@ const Quiz = function Quiz() {
         console.log('score', lsScores)
         const inputVal = document.getElementById("name");
         const d = new Date();
-        //JSON.stringify(string)
         const scoreObj = {
           initials: inputVal.value,
           score: this.score,
@@ -177,12 +174,12 @@ const Quiz = function Quiz() {
         * - starts countdown timer
         * - attach listeners
         */
-
         this.score = 0;
         this.questionIndex = 0;
         this.timerSeconds = 180;
         const timerEl = document.getElementById("quizTimer");
         const quizEl = document.getElementById("quiz");
+  
         // attach the custom event listeners
         document.addEventListener(events.DISPLAY_RESPONSE, this.showAnswerMessage.bind(this));
         document.addEventListener(events.TIME_PENALTY, this.timePenalty.bind(this));
@@ -196,15 +193,17 @@ const Quiz = function Quiz() {
         timerEl.style.display = 'block';
         // show first question and start timer
         this.startTimer();
-        this.renderQuestion(this.quizData.questions[0]);
+        this.renderQuestion();
       },
       finishQuiz: function() {
+        let finalScreen = document.getElementById("finalScreen");
+        finalScreen.style.display = "block";
         let quiz = document.getElementById("quiz");
         document.getElementById("question").innerHTML = "";
         document.getElementById("answers").innerHTML = "";
         quiz.style.display = "none";
-        const finalScore = document.getElementById("finalScreen");
-        finalScore.innerHTML = `Your final score is ${this.score}%`;
+        const finalScore = document.getElementById("finalScore");
+        finalScore.innerHTML = `Your final score is ${this.score}`;
         this.timerSeconds = 0;
         this.startTimer(true); //pass stopTimer arg bool to stopTimer
         const saveBtn = document.getElementById("submitBtn");
