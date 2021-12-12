@@ -91,3 +91,7 @@ li.answer:hover {
 #scoreboard {
   display: none;
 }
+
+#scoreboard #btnWrapper {
+  display: flex;
+}

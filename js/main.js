@@ -19,6 +19,28 @@ const ScoreBoard = function ScoreBoard() {
     * - display "clear high scores" button
     * - display "go back" button to return to Quiz home page
     */
+    return {
+      showScoreboard: function() {
+        const boardUI = document.getElementById("scoreboard");
+        boardUI.style.display = "block";
+        this.renderScores();
+      },
+      getScores: function() {
+        console.log(JSON.parse(localStorage.getItem("scores")));
+        return JSON.parse(localStorage.getItem("scores"));
+        
+      },
+      renderScores: function() {
+        const scores = this.getScores();
+        const scoresEl = document.getElementById("highScores");
+        const scoreListEl = document.createElement("ol");
+        scores.scores.forEach((scoreObj) => {
+          const {initials, score, ts} = scoreObj;
+          scoreListEl.innerHTML += `<li>${initials} ${score} ${ts}</li>`;
+        });
+        scoresEl.append(scoreListEl);
+      }
+    }
 }
 const Quiz = function Quiz() {
   return {
@@ -225,11 +247,23 @@ const Quiz = function Quiz() {
  * attach listener to 'start quiz' btn and run startQuiz function
  */
 function initApp() {
+  /**
+   * Instantiate quiz and attach listener to start quiz
+   */
   const newTest = Quiz();
   const startBtn = document.getElementById("startQuiz");
   startBtn.addEventListener("click", function(evt){
     newTest.startQuiz();
   });
+  /**
+   * Instantiate Scoreboard and attach listener to show scoreboard
+   */
+  const ScoreboardView = ScoreBoard();
+  const scoreboardBtn = document.getElementById("showScoreboard");
+  scoreboardBtn.addEventListener("click", function() {
+    ScoreboardView.showScoreboard();
+  });
+
 }
 
 initApp();
