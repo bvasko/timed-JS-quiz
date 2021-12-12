@@ -10,12 +10,15 @@ Todos:
 Take the quiz here: https://bvasko.github.io/timed-JS-quiz/
 
 ## Screenshots
+
+## Technical Documentation
 ### Running the app locally
 This app is vanilla JS and uses no frameworks.
 Data for the quiz is found in questions.js
 All interactivity is contained in main.js
 
 ### App Setup
+![Start Screen](./documentation/StartScreen.png)
 ![Take Quiz Screen](./documentation/TakeQuizScreen.png)
 ## License
 
