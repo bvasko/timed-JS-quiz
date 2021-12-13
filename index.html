@@ -24,7 +24,7 @@
 
 <body>
   <header>
-    <div class="cta button">View All Scores</div>
+    <div id="showScoreboard" class="cta button">View All Scores</div>
     <div id="quizTimer"></div>
   </header>
   <main>
@@ -46,8 +46,20 @@
       <div id="finalScore"></div>
       <div id="saveScore">
         <label for="name">Enter initials:</label>
-        <input type="text" name="name" id="name" />
+        <div class="input-wrapper">
+          <input type="text" name="name" id="name" />
+          <sub>Required</sub>
+        </div>
         <button type="submit" id="submitBtn">Save</button>
+        <div id="saveError"></div>
+      </div>
+    </div>
+    <div id="scoreboard">
+      <h1>High Scores</h1>
+      <div id="highScores"></div>
+      <div id="btnWrapper">
+        <div class="cta" id="homeBtn">Go Back</div>
+        <div class="cta" id="clearScores">Clear Scores</div>
       </div>
     </div>
   </main>

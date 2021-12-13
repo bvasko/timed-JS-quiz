@@ -15,10 +15,50 @@ const ScoreBoard = function ScoreBoard() {
     /*
     * ScoreBoard
     * - render list of scores and initials
-    * - sort scores array from highest to lowest
     * - display "clear high scores" button
-    * - display "go back" button to return to Quiz home page
+    * - display "go back" button to return to Quiz home page on click
     */
+    return {
+      showScoreboard: function() {
+        console.log('do this')
+        const boardUI = document.getElementById("scoreboard");
+        const startScreen = document.getElementById("startScreen");
+        const goBack = document.getElementById("homeBtn");
+        document.getElementById("showScoreboard").style.display = "none";
+        document.getElementById("finalScreen").style.display = "none";
+        goBack.addEventListener("click", function() {
+          this.goBack();
+        }.bind(this));
+        boardUI.style.display = "block";
+        startScreen.style.display = "none";
+        this.renderScores();
+      },
+      clearScores: function() {
+        localStorage.clear();
+        document.getElementById("highScores").innerHTML = "";
+      },
+      goBack: function() {
+        document.getElementById("scoreboard").style.display = "none";
+        document.getElementById("startScreen").style.display = "block";
+        document.getElementById("showScoreboard").style.display = "block";
+        document.getElementById("showScoreboard").style.visibility = "visible";
+      },
+      getScores: function() {
+        return JSON.parse(localStorage.getItem("scores"));
+      },
+      renderScores: function() {
+        const scores = this.getScores();
+        if (!scores) return;
+        const scoresEl = document.getElementById("highScores");
+        scoresEl.innerHTML = "";
+        const scoreListEl = document.createElement("ol");
+        scores.forEach((scoreObj) => {
+          const {initials, score, ts} = scoreObj;
+          scoreListEl.innerHTML += `<li>${initials} ${score} ${ts}</li>`;
+        });
+        scoresEl.append(scoreListEl);
+      }
+    }
 }
 const Quiz = function Quiz() {
   return {
@@ -122,18 +162,27 @@ const Quiz = function Quiz() {
         }
         return timeStr;
       },
+      validateInput: function(val) {
+        return (val.length !==0) ? String(val) : false;
+      },
       saveScore: function(evt) {
-        let lsScores = JSON.parse(localStorage.getItem('scores')) || {scores: []};
-        console.log('score', lsScores)
+        console.log('do')
+        let lsScores = JSON.parse(localStorage.getItem('scores')) || [];
         const inputVal = document.getElementById("name");
+        const isValid = this.validateInput(inputVal.value);
+        if (!isValid) {
+          document.getElementById("saveError").textContent = "Please enter your initials to proceed";
+          return;
+        }
         const d = new Date();
         const scoreObj = {
           initials: inputVal.value,
           score: this.score,
           ts: d.toDateString()
         };
-        lsScores.scores.push(scoreObj);
+        lsScores.push(scoreObj);
         localStorage.setItem('scores', JSON.stringify(lsScores));
+        App.ScoreboardView.showScoreboard();
       },
       startTimer: function(stopTimer) {
         /**
@@ -179,6 +228,7 @@ const Quiz = function Quiz() {
         this.timerSeconds = 180;
         const timerEl = document.getElementById("quizTimer");
         const quizEl = document.getElementById("quiz");
+        document.getElementById("showScoreboard").style.visibility = "hidden";
   
         // attach the custom event listeners
         document.addEventListener(events.DISPLAY_RESPONSE, this.showAnswerMessage.bind(this));
@@ -214,7 +264,6 @@ const Quiz = function Quiz() {
         * - show submit button
         * - validate input text
         * - store object or array in localStorage of user initials & score
-        * - sort scores array from highest to lowest
         */
       }
   }
@@ -224,12 +273,29 @@ const Quiz = function Quiz() {
  * Loading the quiz initializes the first screen where user presses 'start quiz'
  * attach listener to 'start quiz' btn and run startQuiz function
  */
-function initApp() {
-  const newTest = Quiz();
-  const startBtn = document.getElementById("startQuiz");
-  startBtn.addEventListener("click", function(evt){
-    newTest.startQuiz();
-  });
+let App = {
+    /**
+   * Instantiate Scoreboard and attach listener to show scoreboard
+   */
+  ScoreboardView: ScoreBoard(),
+  scoreboardBtn: document.getElementById("showScoreboard"),
+  clearScoresBtn: document.getElementById("clearScores"),
+  newTest: Quiz(),
+  startBtn: document.getElementById("startQuiz"),
+  initApp: function() {
+    /**
+     * Instantiate quiz and attach listener to start quiz
+     */
+    this.startBtn.addEventListener("click", function(evt){
+      this.newTest.startQuiz();
+    }.bind(this));
+    this.scoreboardBtn.addEventListener("click", function() {
+      this.ScoreboardView.showScoreboard();
+    }.bind(this));
+    this.clearScoresBtn.addEventListener("click", function() {
+      this.ScoreboardView.clearScores();
+    }.bind(this));
+  }
 }
 
-initApp();
+App.initApp();
