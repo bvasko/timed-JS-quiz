@@ -72,7 +72,7 @@ const Quiz = function Quiz() {
       msgIncorrect: "Nope",
       questionIndex: null,
       score: null,
-      timerSeconds: null,
+      timerSeconds: 10,
       handleAnswerClick: function(evt) {
         /* 
         * Dispatch custom events on answer click to display response
@@ -197,11 +197,12 @@ const Quiz = function Quiz() {
         timerEl.textContent = this.formatTime(this.timerSeconds);
         const timerInterval = setInterval(function(){ 
           timerEl.textContent = this.formatTime(this.timerSeconds);
-          this.timerSeconds--;
           if (this.timerSeconds === 0 || this.timerSeconds < 0) {
             timerEl.textContent = this.formatTime(this.timerSeconds);
+            this.finishQuiz();
             clearInterval(timerInterval);
           }
+          this.timerSeconds--;
         }.bind(this), 1000);
         if (stopTimer) {
           clearInterval(timerInterval);
