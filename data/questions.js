@@ -5,8 +5,8 @@ const data = function() {
       "question":"Commonly used data types do not include",
       "answers": ["strings", "booleans", "alerts", "numbers"],
       "correctAnswer": "alerts"
-    },
-    {
+    }
+    /*{
       "question":"The condition in an if / else statement is enclosed within",
       "answers": ["commas", "curly brackets", "quotes", "parantheses"],
       "correctAnswer": "parantheses"
@@ -25,6 +25,6 @@ const data = function() {
       "question": "A very useful tool used during development and debugging for printing content to the debugger is",
       "answers": ["Javascript","terminal / bash", "for loops", "console.log"],
       "correctAnswer": "console.log"
-    }
+    }*/
   ]};
 };

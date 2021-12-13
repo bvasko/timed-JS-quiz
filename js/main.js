@@ -20,7 +20,6 @@ const ScoreBoard = function ScoreBoard() {
     */
     return {
       showScoreboard: function() {
-        console.log('do this')
         const boardUI = document.getElementById("scoreboard");
         const startScreen = document.getElementById("startScreen");
         const goBack = document.getElementById("homeBtn");
@@ -166,7 +165,6 @@ const Quiz = function Quiz() {
         return (val.length !==0) ? String(val) : false;
       },
       saveScore: function(evt) {
-        console.log('do')
         let lsScores = JSON.parse(localStorage.getItem('scores')) || [];
         const inputVal = document.getElementById("name");
         const isValid = this.validateInput(inputVal.value);
@@ -214,6 +212,12 @@ const Quiz = function Quiz() {
           timerEl.setAttribute("class", "");
         }, 800)
       },
+      resetQuiz: function() {
+        this.score = 0;
+        this.questionIndex = 0;
+        this.timerSeconds = 180;
+        this.attempts = 0;
+      },
       startQuiz: function() {
         /*
         * - initializes countdown timer
@@ -223,21 +227,12 @@ const Quiz = function Quiz() {
         * - starts countdown timer
         * - attach listeners
         */
-        this.score = 0;
-        this.questionIndex = 0;
-        this.timerSeconds = 180;
+        
+        this.resetQuiz();
         const timerEl = document.getElementById("quizTimer");
         const quizEl = document.getElementById("quiz");
         document.getElementById("showScoreboard").style.visibility = "hidden";
-  
-        // attach the custom event listeners
-        document.addEventListener(events.DISPLAY_RESPONSE, this.showAnswerMessage.bind(this));
-        document.addEventListener(events.TIME_PENALTY, this.timePenalty.bind(this));
-        quizEl.addEventListener("click", this.handleAnswerClick.bind(this));
-
-        //TODO: make this work - need to change 'quizEl' to document
-        //quizEl.addEventListener(events.NEXT_QUESTION, function(){ console.log("got it")});
-        /* hide intro screen */
+        quizEl.style.display = "block";
         const startScreen = document.getElementById("startScreen");
         startScreen.style.display = 'none';
         timerEl.style.display = 'block';
@@ -246,6 +241,13 @@ const Quiz = function Quiz() {
         this.renderQuestion();
       },
       finishQuiz: function() {
+        /* 
+        * - show final score
+        * - show input for initials
+        * - show submit button
+        * - validate input text
+        * - store object or array in localStorage of user initials & score
+        */
         let finalScreen = document.getElementById("finalScreen");
         finalScreen.style.display = "block";
         let quiz = document.getElementById("quiz");
@@ -258,20 +260,13 @@ const Quiz = function Quiz() {
         this.startTimer(true); //pass stopTimer arg bool to stopTimer
         const saveBtn = document.getElementById("submitBtn");
         saveBtn.addEventListener("click", this.saveScore.bind(this));
-        /* 
-        * - show final score
-        * - show input for initials
-        * - show submit button
-        * - validate input text
-        * - store object or array in localStorage of user initials & score
-        */
       }
   }
 };
 
 /**
  * Loading the quiz initializes the first screen where user presses 'start quiz'
- * attach listener to 'start quiz' btn and run startQuiz function
+ * attach listeners here so they only attach and fire once
  */
 let App = {
     /**
@@ -295,6 +290,11 @@ let App = {
     this.clearScoresBtn.addEventListener("click", function() {
       this.ScoreboardView.clearScores();
     }.bind(this));
+    const quizEl = document.getElementById("quiz");
+    quizEl.addEventListener("click", this.newTest.handleAnswerClick.bind(this.newTest));
+    // attach the custom event listeners
+    document.addEventListener(events.DISPLAY_RESPONSE, this.newTest.showAnswerMessage.bind(this.newTest));
+    document.addEventListener(events.TIME_PENALTY, this.newTest.timePenalty.bind(this.newTest));
   }
 }
 
