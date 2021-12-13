@@ -11,6 +11,11 @@
   NEXT_QUESTION: "nextQuestion"
 }
 
+/**
+ * 
+ * Quiz doesn't end when time runs out
+ */
+
 const ScoreBoard = function ScoreBoard() {
     /*
     * ScoreBoard
@@ -23,7 +28,7 @@ const ScoreBoard = function ScoreBoard() {
         const boardUI = document.getElementById("scoreboard");
         const startScreen = document.getElementById("startScreen");
         const goBack = document.getElementById("homeBtn");
-        document.getElementById("showScoreboard").style.display = "none";
+        document.getElementById("showScoreboardBtn").style.display = "none";
         document.getElementById("finalScreen").style.display = "none";
         goBack.addEventListener("click", function() {
           this.goBack();
@@ -39,8 +44,8 @@ const ScoreBoard = function ScoreBoard() {
       goBack: function() {
         document.getElementById("scoreboard").style.display = "none";
         document.getElementById("startScreen").style.display = "block";
-        document.getElementById("showScoreboard").style.display = "block";
-        document.getElementById("showScoreboard").style.visibility = "visible";
+        document.getElementById("showScoreboardBtn").style.display = "block";
+        document.getElementById("showScoreboardBtn").style.visibility = "visible";
       },
       getScores: function() {
         return JSON.parse(localStorage.getItem("scores"));
@@ -231,7 +236,7 @@ const Quiz = function Quiz() {
         this.resetQuiz();
         const timerEl = document.getElementById("quizTimer");
         const quizEl = document.getElementById("quiz");
-        document.getElementById("showScoreboard").style.visibility = "hidden";
+        document.getElementById("showScoreboardBtn").style.visibility = "hidden";
         quizEl.style.display = "block";
         const startScreen = document.getElementById("startScreen");
         startScreen.style.display = 'none';
@@ -258,8 +263,6 @@ const Quiz = function Quiz() {
         finalScore.innerHTML = `Your final score is ${this.score}`;
         this.timerSeconds = 0;
         this.startTimer(true); //pass stopTimer arg bool to stopTimer
-        const saveBtn = document.getElementById("submitBtn");
-        saveBtn.addEventListener("click", this.saveScore.bind(this));
       }
   }
 };
@@ -273,7 +276,7 @@ let App = {
    * Instantiate Scoreboard and attach listener to show scoreboard
    */
   ScoreboardView: ScoreBoard(),
-  scoreboardBtn: document.getElementById("showScoreboard"),
+  scoreboardBtn: document.getElementById("showScoreboardBtn"),
   clearScoresBtn: document.getElementById("clearScores"),
   newTest: Quiz(),
   startBtn: document.getElementById("startQuiz"),
@@ -290,6 +293,8 @@ let App = {
     this.clearScoresBtn.addEventListener("click", function() {
       this.ScoreboardView.clearScores();
     }.bind(this));
+    const saveBtn = document.getElementById("submitBtn");
+    saveBtn.addEventListener("click", this.newTest.saveScore.bind(this.newTest));
     const quizEl = document.getElementById("quiz");
     quizEl.addEventListener("click", this.newTest.handleAnswerClick.bind(this.newTest));
     // attach the custom event listeners
