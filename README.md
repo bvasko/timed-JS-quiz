@@ -3,9 +3,6 @@
 ## About
 WIP - Timed javascript quiz
 
-Todos:
-- show timer
-- increment score
 ## Usage
 Take the quiz here: https://bvasko.github.io/timed-JS-quiz/
 

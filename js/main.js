@@ -50,6 +50,7 @@ const ScoreBoard = function ScoreBoard() {
         const scores = this.getScores();
         if (!scores) return;
         const scoresEl = document.getElementById("highScores");
+        scoresEl.innerHTML = "";
         const scoreListEl = document.createElement("ol");
         scores.forEach((scoreObj) => {
           const {initials, score, ts} = scoreObj;
