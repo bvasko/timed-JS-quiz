@@ -1,12 +1,13 @@
 # Timed Javascript Quiz
 
 ## About
-WIP - Timed javascript quiz
+Timed quiz testing basic javascript knowledge with a countdown timer and scoreboard
 
-## Usage
+## Try it
 Take the quiz here: https://bvasko.github.io/timed-JS-quiz/
 
 ## Screenshots
+![Quiz Start Page Screenshot](./documentation/screenshot1.png)
 
 ## Technical Documentation
 ### Running the app locally
@@ -18,7 +19,7 @@ All interactivity is contained in main.js
 ![Start Screen](./documentation/StartScreen.png)
 ![Take Quiz Screen](./documentation/TakeQuizScreen.png)
 ## License
-
+GNU General Public License
 ## Credits
 
 CSS Reset by Josh Comeau: https://www.joshwcomeau.com/css/custom-css-reset/
