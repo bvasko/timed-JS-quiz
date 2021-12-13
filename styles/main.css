@@ -92,6 +92,26 @@ li.answer:hover {
   display: none;
 }
 
+.input-wrapper {
+  display: inline-block;
+  position: relative;
+}
+.input-wrapper sub {
+  position: absolute;
+  bottom: -23px;
+  left: 0px;
+  font-size: .7rem;
+  font-style: italic;
+}
+
 #scoreboard #btnWrapper {
   display: flex;
+}
+
+#btnWrapper .cta {
+  margin: 36px 24px 0px 0px;
+}
+#saveError {
+  margin-top: 36px;
+  color: red;
 }

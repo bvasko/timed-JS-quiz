@@ -46,8 +46,12 @@
       <div id="finalScore"></div>
       <div id="saveScore">
         <label for="name">Enter initials:</label>
-        <input type="text" name="name" id="name" />
+        <div class="input-wrapper">
+          <input type="text" name="name" id="name" />
+          <sub>Required</sub>
+        </div>
         <button type="submit" id="submitBtn">Save</button>
+        <div id="saveError"></div>
       </div>
     </div>
     <div id="scoreboard">
